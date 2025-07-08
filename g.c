@@ -9,5 +9,6 @@ int main() {
     int y = 10;
     int result = summary(x, y);
     printf("The sum of %d and %d is %d\n", x, y, result);
-    return 0;
+
+    printf("Fuck you, world!\n");
 }
