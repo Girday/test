@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор стипендии</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #111827;
+            color: white;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .settings-panel {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .settings-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #c084fc;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #d1d5db;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label.highlight {
+            color: #c084fc;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: #374151;
+            border: 1px solid #8b5cf6;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+        }
+
+        .form-display {
+            background-color: #374151;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #9ca3af;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .form-display.small {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .coefficient-info {
+            background-color: #374151;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #d1d5db;
+        }
+
+        .coefficient-value {
+            color: #c084fc;
+            font-weight: 500;
+        }
+
+        .results-panel {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .results-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #6ee7b7;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .result-item {
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            border-color: #8b5cf6;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .result-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .result-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .result-info h3 {
+            font-weight: 500;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-info p {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .result-values {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .result-value {
+            text-align: center;
+        }
+
+        .result-value .amount {
+            font-size: 1.125rem;
+            font-weight: bold;
+        }
+
+        .result-value.monthly .amount {
+            color: #60a5fa;
+        }
+
+        .result-value.semester .amount {
+            color: #6ee7b7;
+        }
+
+        .result-value .label {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .result-formula {
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+        }
+
+        .summary-panel {
+            background: linear-gradient(to right, #581c87, #831843);
+            border: 1px solid #7c3aed;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .summary-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #ddd6fe;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .summary-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .summary-item .variant {
+            font-size: 0.875rem;
+            color: #ddd6fe;
+        }
+
+        .summary-item .monthly {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .summary-item .semester {
+            font-size: 0.75rem;
+            color: #c084fc;
+        }
+
+        @media (max-width: 640px) {
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .result-values {
+                align-self: stretch;
+                justify-content: space-around;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">💰 Калькулятор стипендии</h1>
+            <p class="subtitle">Настройте параметры и получите расчеты</p>
+        </div>
+        
+        <div class="grid">
+            <!-- Панель настроек -->
+            <div class="settings-panel">
+                <h2 class="settings-title">⚙️ Настройки</h2>
+                
+                <div class="form-group">
+                    <label class="form-label highlight">Стандарт</label>
+                    <input 
+                        type="number" 
+                        id="standard-input"
+                        class="form-input"
+                        placeholder="4500"
+                    />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label highlight">Староста</label>
+                    <input 
+                        type="number" 
+                        id="starosta-input"
+                        class="form-input"
+                        placeholder="0"
+                    />
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label highlight">POV1</label>
+                        <input 
+                            type="number" 
+                            id="pov1-input"
+                            class="form-input"
+                            placeholder="7490"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label highlight">POV2</label>
+                        <input 
+                            type="number" 
+                            id="pov2-input"
+                            class="form-input"
+                            placeholder="14980"
+                        />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label highlight">Коэффициент</label>
+                    <input 
+                        type="number" 
+                        id="coefficient-input"
+                        class="form-input"
+                        placeholder="0.97"
+                        step="0.01"
+                    />
+                </div>
+            </div>
+            
+            <!-- Результаты -->
+            <div>
+                <div class="results-panel">
+                    <h2 class="results-title">📊 Результаты расчетов</h2>
+                    <div class="results-container" id="results-container">
+                        <!-- Результаты будут добавлены через JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Краткая сводка -->
+                <div class="summary-panel">
+                    <h3 class="summary-title">✨ Быстрый обзор</h3>
+                    <div class="summary-grid" id="summary-container">
+                        <!-- Сводка будет добавлена через JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Переменные
+        let standard = 4500;
+        let starosta = 0;
+        let pov1 = 7490;
+        let pov2 = 14980;
+        let coefficient = 0.97;
+        
+        // Элементы DOM
+        const standardInput = document.getElementById('standard-input');
+        const starostaInput = document.getElementById('starosta-input');
+        const pov1Input = document.getElementById('pov1-input');
+        const pov2Input = document.getElementById('pov2-input');
+        const coefficientInput = document.getElementById('coefficient-input');
+        const resultsContainer = document.getElementById('results-container');
+        const summaryContainer = document.getElementById('summary-container');
+        
+        // Функция для форматирования чисел
+        function formatNumber(num) {
+            return num.toLocaleString('ru-RU');
+        }
+        
+        // Функция расчета результатов
+        function calculateResults() {
+            const variants = [0, pov1, pov2];
+            const results = [];
+            
+            variants.forEach((variant, index) => {
+                const x = (standard + starosta + variant) * coefficient;
+                const sem = x * 5;
+                results.push({
+                    variant: index + 1,
+                    monthly: x,
+                    semester: sem,
+                    additionalValue: variant
+                });
+            });
+            
+            return results;
+        }
+        
+        // Функция отображения результатов
+        function displayResults() {
+            const results = calculateResults();
+            
+            // Очищаем контейнер
+            resultsContainer.innerHTML = '';
+            summaryContainer.innerHTML = '';
+            
+            // Отображаем детальные результаты
+            results.forEach((result, index) => {
+                const variantNames = ['Базовый', 'С POV1', 'С POV2'];
+                
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result-item';
+                resultDiv.innerHTML = `
+                    <div class="result-header">
+                        <div class="result-left">
+                            <div class="result-icon">${result.variant}</div>
+                            <div class="result-info">
+                                <h3>Вариант ${result.variant}</h3>
+                                <p>${variantNames[index]}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="result-values">
+                            <div class="result-value monthly">
+                                <div class="amount">${result.monthly.toFixed(1)}</div>
+                                <div class="label">месяц</div>
+                            </div>
+                            <div class="result-value semester">
+                                <div class="amount">${result.semester.toFixed(1)}</div>
+                                <div class="label">семестр</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-formula">
+                        (${standard} + ${starosta} + ${result.additionalValue}) × ${coefficient} = ${result.monthly.toFixed(1)}
+                    </div>
+                `;
+                
+                resultsContainer.appendChild(resultDiv);
+                
+                // Добавляем в краткую сводку
+                const summaryDiv = document.createElement('div');
+                summaryDiv.className = 'summary-item';
+                summaryDiv.innerHTML = `
+                    <div class="variant">Вар. ${result.variant}</div>
+                    <div class="monthly">${result.monthly.toFixed(0)}</div>
+                    <div class="semester">${result.semester.toFixed(0)} сем</div>
+                `;
+                
+                summaryContainer.appendChild(summaryDiv);
+            });
+        }
+        
+        // Обработчики изменения значений
+        function handleInputChange(event, variableName) {
+            const inputValue = event.target.value;
+            const value = inputValue === '' ? 0 : parseFloat(inputValue) || 0;
+            
+            switch(variableName) {
+                case 'standard':
+                    standard = value;
+                    break;
+                case 'starosta':
+                    starosta = value;
+                    break;
+                case 'pov1':
+                    pov1 = value;
+                    break;
+                case 'pov2':
+                    pov2 = value;
+                    break;
+                case 'coefficient':
+                    coefficient = value;
+                    break;
+            }
+            
+            displayResults();
+        }
+        
+        // Инициализация
+        function init() {
+            // Устанавливаем начальные значения
+            standardInput.value = '4500';
+            starostaInput.value = '750';
+            pov1Input.value = '7490';
+            pov2Input.value = '14980';
+            coefficientInput.value = '0.97';
+            
+            // Добавляем обработчики событий
+            standardInput.addEventListener('input', (e) => handleInputChange(e, 'standard'));
+            starostaInput.addEventListener('input', (e) => handleInputChange(e, 'starosta'));
+            pov1Input.addEventListener('input', (e) => handleInputChange(e, 'pov1'));
+            pov2Input.addEventListener('input', (e) => handleInputChange(e, 'pov2'));
+            coefficientInput.addEventListener('input', (e) => handleInputChange(e, 'coefficient'));
+            
+            // Первоначальный расчет
+            displayResults();
+        }
+        
+        // Запускаем инициализацию после загрузки DOM
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
